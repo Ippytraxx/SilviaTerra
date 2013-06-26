@@ -3,7 +3,7 @@ package com.silviaterra;
 /*
  * 
  * @author Vincent Szolnoky (ippytraxx@unixhub.net)
-*/
+ */
     
 public class SilviaTerra
 {
