@@ -83,11 +83,12 @@ public class SilviaTerra
     }
     
     /**
+     * Gets diameter at the top tree, with foreshortening taken into account
      * 
      * @param DTHPixels            Width of top of tree in pixels  
      * @param distanceToTop       Distance to top of tree from camera lens when angled at top
      * @param FOV                  Field of view of camera in degrees
-     * @param imageWidthPixels    Width of entire image in pixels
+     * @param imageWidthPixels   Width of entire image in pixels
      * @return                      Scaled diameter of top of tree, foreshortening is taken into account
      * @see                         getDistanceToTop()
      */
