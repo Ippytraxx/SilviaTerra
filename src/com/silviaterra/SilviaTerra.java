@@ -14,18 +14,18 @@ public class SilviaTerra
          * Input variables
          */
         
-        final double HFOV = 42.5;
-        final double VFOV = 54.8;
-        double DBHLength = 27.9;
-        double DBHPixels = 216;
-        double imageWidthPixels = 1536;
-        double imageHeightPixels = 2048;
-        double DTHY = 1150;
-        double DBHY = 1365;
-        double verticalTiltAngle = 9.1;
-        double widthYPos = 1150;
-        double widthPixels = 267;
-        final double crosshairModifier = 1.5;
+        final double HFOV = 47.1;
+        final double VFOV = 60;
+        double DBHLength = 83;
+        double DBHPixels = 1626;
+        double imageWidthPixels = 2448;
+        double imageHeightPixels = 3264;
+        double DTHY = 1543;
+        double DBHY = 1605;
+        double verticalTiltAngle = 52;
+        double widthYPos = 1543;
+        double widthPixels = 202;
+        final double crosshairModifier = 1;
         
         double distanceToTree;
         double lowerFOVAngle;
@@ -134,10 +134,21 @@ public class SilviaTerra
         double horizontalDistance;
         
         distanceFromBottom = imageHeightPixels - (imageHeightPixels / crosshairModifier);
-        angleToDBH = (VFOV / 2) - ((VFOV / imageHeightPixels) * distanceFromBottom);
-        imageWidthLength = (imageWidthPixels / DBHPixels) * DBHLength;
-        distanceToDBH = (imageWidthLength / 2) / Math.tan(Math.toRadians(HFOV / 2));
-        horizontalDistance = Math.cos(Math.toRadians(angleToDBH)) * distanceToDBH;
+        
+        if(distanceFromBottom != 0)
+        {
+            angleToDBH = (VFOV / 2) - ((VFOV / imageHeightPixels) * distanceFromBottom);
+            imageWidthLength = (imageWidthPixels / DBHPixels) * DBHLength;
+            distanceToDBH = (imageWidthLength / 2) / Math.tan(Math.toRadians(HFOV / 2));
+            horizontalDistance = Math.cos(Math.toRadians(angleToDBH)) * distanceToDBH;
+        }
+        else
+        {
+            imageWidthLength = ((imageWidthPixels / DBHPixels) * DBHLength);
+            horizontalDistance = (imageWidthLength / 2) / (Math.tan(Math.toRadians(HFOV/2)));
+        }
+        
+        System.out.println(horizontalDistance);
         
         return horizontalDistance;
     }
@@ -149,7 +160,14 @@ public class SilviaTerra
         
         distanceFromBottom = imageHeightPixels - (imageHeightPixels / crosshairModifier);
         
-        lowerFOVAngle = (VFOV / imageHeightPixels) * distanceFromBottom;
+        if(distanceFromBottom == 0)
+        {
+            lowerFOVAngle = VFOV / 2;
+        }
+        else
+        {
+            lowerFOVAngle = (VFOV / imageHeightPixels) * distanceFromBottom;
+        }
         
         return lowerFOVAngle;
     }
