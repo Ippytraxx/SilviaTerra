@@ -1,197 +1,121 @@
 package com.silviaterra;
 
-/*
- * 
- * @author Vincent Szolnoky (ippytraxx@unixhub.net)
+/**
+ *
+ * @author vincent
  */
-    
 public class SilviaTerra
 {
-
+    static double DBHLength;
+    static double DBHPixels;
+    static double HFOV;
+    static double VFOV;
+    static double HRes;
+    static double VRes;
+    static double crosshairModifier;
+    static double verticalTiltAngle;
+    
+    static double horizontalDistance;
+    static double horizontalPixelDistance;
+    static double topDistance;
+    static double widthYPos;
+    static double widthPixelLength;
+    static double width;
+    
     public static void main(String[] args)
     {
         /*
-         * Input variables
+         * User set variables
          */
+        DBHLength = 59;
+        DBHPixels = 381;
+        HFOV= 47.1;
+        VFOV = 60.5;
+        HRes = 2448;
+        VRes = 3264;
+        verticalTiltAngle = 22;
         
-        final double HFOV = 47.1;
-        final double VFOV = 60;
-        double DBHLength = 83;
-        double DBHPixels = 1626;
-        double imageWidthPixels = 2448;
-        double imageHeightPixels = 3264;
-        double DTHY = 1543;
-        double DBHY = 1605;
-        double verticalTiltAngle = 52;
-        double widthYPos = 1543;
-        double widthPixels = 202;
-        final double crosshairModifier = 1;
-        
-        double distanceToTree;
-        double lowerFOVAngle;
-        
-        //distanceToTree = getDistanceToTree(imageWidthPixels, DBHPixels, DBHLength, HFOV);
-        
-        lowerFOVAngle = getLowerFOVAngle(crosshairModifier, imageHeightPixels, VFOV);
-        
-        distanceToTree = getHorizontalDistance(crosshairModifier, imageHeightPixels, imageWidthPixels, DBHPixels, DBHLength, VFOV, HFOV);
-        
-        System.out.println(distanceToTree);
-                   
-//        System.out.println(getScaledWidth(DTHY, widthYPos, widthPixels, VFOV, HFOV, verticalTiltAngle, distanceToTree, imageHeightPixels));
-        
-        System.out.println(getScaledWidth(distanceToTree, verticalTiltAngle, HFOV, imageWidthPixels, widthPixels, lowerFOVAngle, imageHeightPixels, DBHY, widthYPos, DTHY));
-        System.out.println(getScaledHeight(DTHY, verticalTiltAngle, VFOV,imageHeightPixels, widthYPos, distanceToTree, DBHY, lowerFOVAngle));
-        
-        //System.out.println(getHorizontalDistance(crosshairModifier, imageHeightPixels, imageWidthPixels, DBHPixels, DBHLength, VFOV, HFOV));
-    }
-    
-    /**
-     * Gets distance between the tree and camera lens
-     * 
-     * @param imageWidthPixels  Width of entire image in pixels
-     * @param DBHPixels          Width of tree at breast height in pixels
-     * @param DBHLength          Width of tree at breast height in centimeters
-     * @param HFOV                 Field of view in degrees
-     * @return                     Distance to tree in centimeters
-     */
-    
-    public static double getDistanceToTree(double imageWidthPixels, double DBHPixels, double DBHLength, double HFOV)
-    {
-        double imageWidthLength = ((imageWidthPixels / DBHPixels) * DBHLength);
-        double distanceToTree = (imageWidthLength / 2) / (Math.tan(Math.toRadians(HFOV/2)));
-        
-        return distanceToTree;
-    }
-    
-    public static double getScaledWidth(double horizontalDistance, double verticalTiltAngle, double HFOV, double imageWidthPixels, double widthPixels, double lowerFOVAngle, double imageHeightPixels, double DBHY, double widthYPos, double DTHY)
-    {
-        double distanceToWidth;
-        double imageWidthLength;
-        double scaledWidth;
-        
-        distanceToWidth = getDistanceToWidth(horizontalDistance, verticalTiltAngle, lowerFOVAngle, imageHeightPixels, DBHY, widthYPos, DTHY);
-        imageWidthLength = (Math.tan(Math.toRadians(HFOV / 2)) * distanceToWidth) * 2;
-        
-        scaledWidth = (imageWidthLength / imageWidthPixels) * widthPixels;
-        
-        return scaledWidth;
-    }
-    
-//    public static double getScaledWidtha(double DTHY, double widthYPos, double widthPixels, double lowerFOVAngle, double HFOV, double verticalTiltAngle, double distanceToTree, double imageHeightPixels)
-//    {
-//        double visiblePixels = imageHeightPixels - DTHY;
-//        double hiddenAngle = verticalTiltAngle - lowerFOVAngle;
-//        
-//        if(hiddenAngle > 0)
-//        {
-//            visiblePixels = imageHeightPixels - DTHY;
-//            angleToWidth = hiddenAngle + (((VFOV / 2) / visiblePixels) * (imageHeightPixels - widthYPos));
-//        }
-//        else
-//        {
-//            visiblePixels = DBHY - DTHY;
-//            angleToWidth = (verticalTiltAngle / visiblePixels) * (DBHY - widthYPos);
-//        }
-//        
-//        double angleToWidth = hiddenAngle + (((VFOV / 2) / visiblePixels) * (imageHeightPixels - widthYPos));
-//        double distanceToWidth = distanceToTree / Math.cos(Math.toRadians(angleToWidth));
-//        double lengthOfImageAtWidth = (Math.tan(Math.toRadians(HFOV / 2)) * distanceToWidth) * 2;
-//        
-//        double widthLength = (lengthOfImageAtWidth / 3264) * widthPixels;
-//        
-//        return widthLength;
-//    }
-    
-    public static double getScaledHeight(double DTHY, double verticalTiltAngle, double VFOV, double imageHeightPixels, double widthYPos, double distanceToTree, double DBHY, double lowerFOVAngle)
-    {
-        double visiblePixels;
-        double hiddenAngle = verticalTiltAngle - lowerFOVAngle;
-        double angleToWidth;
-        
-        if(hiddenAngle > 0)
-        {
-            visiblePixels = imageHeightPixels - DTHY;
-            angleToWidth = hiddenAngle + ((lowerFOVAngle / visiblePixels) * (imageHeightPixels - widthYPos));
-        }
-        else
-        {
-            visiblePixels = DBHY - DTHY;
-            angleToWidth = (verticalTiltAngle / visiblePixels) * (DBHY - widthYPos);
-        }
-        
-        double heightToWidth = Math.tan(Math.toRadians(angleToWidth)) * distanceToTree;
-        
-        return heightToWidth;
-    }
-    
-    public static double getHorizontalDistance(double crosshairModifier, double imageHeightPixels, double imageWidthPixels, double DBHPixels, double DBHLength, double VFOV, double HFOV)
-    {
-        double distanceFromBottom;
-        double angleToDBH;
-        double imageWidthLength;
-        double distanceToDBH;
-        double horizontalDistance;
-        
-        distanceFromBottom = imageHeightPixels - (imageHeightPixels / crosshairModifier);
-        
-        if(distanceFromBottom != 0)
-        {
-            angleToDBH = (VFOV / 2) - ((VFOV / imageHeightPixels) * distanceFromBottom);
-            imageWidthLength = (imageWidthPixels / DBHPixels) * DBHLength;
-            distanceToDBH = (imageWidthLength / 2) / Math.tan(Math.toRadians(HFOV / 2));
-            horizontalDistance = Math.cos(Math.toRadians(angleToDBH)) * distanceToDBH;
-        }
-        else
-        {
-            imageWidthLength = ((imageWidthPixels / DBHPixels) * DBHLength);
-            horizontalDistance = (imageWidthLength / 2) / (Math.tan(Math.toRadians(HFOV/2)));
-        }
+        double[] widths = new double[]{72,169,232,271,329,390};
+        double[] heights = new double[]{1683,1590,1493,1383,1298,1200};
+                
+        getHorizontalDistance();
+        getHorizontalPixelDistance();
+        getTopDistance();
         
         System.out.println(horizontalDistance);
+        System.out.println(horizontalPixelDistance);
+        System.out.println();
         
-        return horizontalDistance;
+        for(int i = 0; i < widths.length; i++)
+        {
+            widthPixelLength = widths[i];
+            widthYPos = heights[i];
+            getWidth();
+            
+            System.out.println("Height:" +  heights[i] + " - " + width);
+        }   
     }
     
-    public static double getLowerFOVAngle(double crosshairModifier, double imageHeightPixels, double VFOV)
+    public static void getHorizontalDistance()
     {
-        double distanceFromBottom;
-        double lowerFOVAngle;
+        double imageWidth;
         
-        distanceFromBottom = imageHeightPixels - (imageHeightPixels / crosshairModifier);
-        
-        if(distanceFromBottom == 0)
+        imageWidth = (DBHLength / DBHPixels) * HRes;
+        horizontalDistance = (imageWidth / 2) / Math.tan(Math.toRadians(HFOV / 2));
+    }
+    
+    public static void getHorizontalPixelDistance()
+    {
+        if(verticalTiltAngle > (VFOV / 2))
         {
-            lowerFOVAngle = VFOV / 2;
+            double topAngle;
+            double bisectionLengthPixels;
+            
+            topAngle = 180 - 90 - verticalTiltAngle;
+            bisectionLengthPixels = Math.sin(Math.toRadians(topAngle)) / (Math.sin(Math.toRadians(VFOV / 2)) / (VRes / 2));
+            
+            horizontalPixelDistance = bisectionLengthPixels * Math.cos(Math.toRadians(verticalTiltAngle - (VFOV / 2)));
         }
         else
         {
-            lowerFOVAngle = (VFOV / imageHeightPixels) * distanceFromBottom;
+            horizontalPixelDistance = (VRes / 2) / Math.tan(Math.toRadians(verticalTiltAngle));
         }
-        
-        return lowerFOVAngle;
     }
     
-    public static double getDistanceToWidth(double horizontalDistance, double verticalTiltAngle, double lowerFOVAngle, double imageHeightPixels, double DBHY, double widthYPos, double DTHY)
+    public static void getTopDistance()
+    {   
+        topDistance = horizontalDistance / Math.cos(Math.toRadians(verticalTiltAngle));
+    }
+    
+    public static void getWidth()
     {
-        double distanceToWidth;
-        double visiblePixels;
-        double hiddenAngle = verticalTiltAngle - lowerFOVAngle;
+        double missingVerticalPixelDistance;
         double angleToWidth;
-        
-        if(hiddenAngle > 0)
+        double distanceToWidth;
+        double imageWidth;
+
+        if(verticalTiltAngle > (VFOV / 2))
         {
-            visiblePixels = imageHeightPixels - DTHY;
-            angleToWidth = hiddenAngle + ((lowerFOVAngle / visiblePixels) * (imageHeightPixels - widthYPos));
+            missingVerticalPixelDistance = horizontalPixelDistance * Math.tan(Math.toRadians(verticalTiltAngle - (VFOV / 2)));
+            widthYPos = widthYPos + missingVerticalPixelDistance;
+            
+            angleToWidth = Math.toDegrees(Math.atan(widthYPos / horizontalPixelDistance));
+            
+            distanceToWidth = horizontalDistance / Math.cos(Math.toRadians(angleToWidth));
+            
+            imageWidth = (distanceToWidth * Math.tan(Math.toRadians(HFOV / 2))) * 2;
+            
+            width = (imageWidth / HRes) * widthPixelLength;
         }
         else
         {
-            visiblePixels = DBHY - DTHY;
-            angleToWidth = (verticalTiltAngle / visiblePixels) * (DBHY - widthYPos);
+            angleToWidth = Math.toDegrees(Math.atan(widthYPos / horizontalPixelDistance));
+            
+            distanceToWidth = horizontalDistance / Math.cos(Math.toRadians(angleToWidth));
+            
+            imageWidth = (distanceToWidth * Math.tan(Math.toRadians(HFOV / 2))) * 2;
+            
+            width = (imageWidth / HRes) * widthPixelLength;
         }
-        
-        distanceToWidth = horizontalDistance / Math.cos(Math.toRadians(verticalTiltAngle));
-        
-        return distanceToWidth;
-    }
+    } 
 }
