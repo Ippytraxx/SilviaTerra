@@ -21,6 +21,7 @@ public class SilviaTerra
     static double widthYPos;
     static double widthPixelLength;
     static double width;
+    static double height;
     
     public static void main(String[] args)
     {
@@ -51,8 +52,9 @@ public class SilviaTerra
             widthPixelLength = widths[i];
             widthYPos = heights[i];
             getWidth();
+            getHeight();
             
-            System.out.println("Height:" +  heights[i] + " - " + width);
+            System.out.println(height + " - " + width);
         }   
     }
     
@@ -118,4 +120,26 @@ public class SilviaTerra
             width = (imageWidth / HRes) * widthPixelLength;
         }
     } 
+    
+    public static void getHeight()
+    {
+        double missingVerticalPixelDistance;
+        double angleToWidth;
+        
+        if(verticalTiltAngle > (VFOV / 2))
+        {
+            missingVerticalPixelDistance = horizontalPixelDistance * Math.tan(Math.toRadians(verticalTiltAngle - (VFOV / 2)));
+            widthYPos = widthYPos + missingVerticalPixelDistance;
+            
+            angleToWidth = Math.toDegrees(Math.atan(widthYPos / horizontalPixelDistance));
+            
+            height = Math.tan(Math.toRadians(angleToWidth)) * horizontalDistance;
+        }
+        else
+        {
+            angleToWidth = Math.toDegrees(Math.atan(widthYPos / horizontalPixelDistance));
+            
+            height = Math.tan(Math.toRadians(angleToWidth)) * horizontalDistance;
+        }
+    }
 }
