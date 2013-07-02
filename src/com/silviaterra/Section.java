@@ -56,7 +56,9 @@ public class Section
         a1 = Math.pow(pixelList.get(upper).get(4) / 2, 2) * Math.PI;
         a2 = Math.pow(pixelList.get(lower).get(4) / 2, 2) * Math.PI;
         
-        volume = (h/4) + (a1 + Math.pow(Math.pow(a1, 2) * a2, 1 / 3) + Math.pow(Math.pow(a2, 2) * a1, 1 / 3) + a2);
+        System.out.println(h + " : " + a1 + " : " + a2);
+        
+        volume = (h / 4) * (a1 + Math.pow(Math.pow(a1, 2.0) * a2, 1.0 / 3.0) + Math.pow(Math.pow(a2, 2.0) * a1, 1.0 / 3.0) + a2);
     }
     
     private void calculateParaboloidVolume()
