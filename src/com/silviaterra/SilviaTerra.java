@@ -1,6 +1,9 @@
 package com.silviaterra;
 
+import java.io.FileReader;
 import java.util.ArrayList;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 /**
  *
@@ -17,6 +20,9 @@ public class SilviaTerra
     static double crosshairModifier;
     static double verticalTiltAngle;
     
+    static String treeInfoFilePath;
+    static String globalInfoFilePath;
+    
     static double horizontalDistance;
     static double horizontalPixelDistance;
     static double topDistance;
@@ -32,6 +38,9 @@ public class SilviaTerra
     
     public static void main(String[] args)
     {
+        treeInfoFilePath = args[0];
+        globalInfoFilePath = args[1];
+        
         /*
          * User set variables
          */
@@ -45,6 +54,25 @@ public class SilviaTerra
         
 //        double[] widths = new double[]{177,299,511,968};
 //        double[] heights = new double[]{1667,1316,739,112};
+        
+        JSONParser jsonParser = new JSONParser();
+        
+        try
+        {
+            Object obj = jsonParser.parse(new FileReader(treeInfoFilePath));
+            JSONObject jsonObject1 = (JSONObject) obj;
+            
+            obj = jsonParser.parse(new FileReader(globalInfoFilePath));
+            JSONObject jsonObject2 = (JSONObject) obj;
+            
+            DBHLength = (Double.parseDouble((String) jsonObject1.get("dbh"))) * 2.54;
+            VFOV = (double) jsonObject2.get("horizontalViewAngle");
+            HFOV = (double) jsonObject2.get("verticalViewAngle");
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
         
         for(int i = 0; i < 6; i++)
         {
