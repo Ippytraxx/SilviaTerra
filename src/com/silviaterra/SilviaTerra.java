@@ -24,6 +24,7 @@ public class SilviaTerra
     static double imagePlateScale;
     static double horizontalDistance;
     
+    static ArrayList<ArrayList<Double>> pixelList = new ArrayList();
     static ArrayList<HashMap<String, ArrayList<Double>>> rawDBHPixelList;
     static ArrayList<HashMap<String, ArrayList<Double>>> rawBolePixelList;
     static ArrayList<ArrayList<Double>> dbhPixelList = new ArrayList();
@@ -76,6 +77,7 @@ public class SilviaTerra
                 System.out.println(dbhPixelList.get(i).get(0) + " : " + dbhPixelList.get(i).get(1) + " : " + dbhPixelList.get(i).get(2) + " : " + dbhPixelList.get(i).get(3) + " : " + dbhPixelList.get(i).get(4));
             }
             
+            integrateTrapezoids();
         }
         catch(Exception e)
         {
@@ -178,4 +180,26 @@ public class SilviaTerra
     {
         horizontalDistance = (((DBHLength / DBHPixels) * HRes) / 2) / Math.tan(Math.toRadians(HFOV / 2));
     }
+    
+    public static void integrateTrapezoids()
+    {
+        double h1;
+        double h2;
+        double b;
+        double volume = 0;
+        
+        pixelList.addAll(dbhPixelList);
+        pixelList.addAll(bolePixelList);
+        
+        for(int i = 0; i < pixelList.size() - 1; i++)
+        {
+            h1 = Math.pow(pixelList.get(i).get(4) / 2, 2) * Math.PI;
+            h2 = Math.pow(pixelList.get(i+1).get(4) / 2, 2) * Math.PI;
+            b = pixelList.get(i+1).get(3) - pixelList.get(i).get(3);
+            
+           volume += (0.5 * (h1 + h2)) * b;
+        }
+        System.out.println(volume);
+    }
 }
+ 
