@@ -17,7 +17,7 @@ public class SilviaTerra
     static double DBHPixels;
     static double VFOV;
     static double HFOV;
-    static double verticalTiltAngle = 14.5;
+    static double verticalTiltAngle = 27;
     static double HRes = 2448;
     static double VRes = 3264;
     static double highestDBHHeight;
@@ -36,19 +36,19 @@ public class SilviaTerra
         
         try
         {
-            Object obj = jsonParser.parse(new FileReader("/home/vincent/Development/Java_Projects/SilviaTerra/examples/global_info.txt"));
+            Object obj = jsonParser.parse(new FileReader(args[0]));
             JSONObject jsonObject1 = (JSONObject) obj;
             
-            obj = jsonParser.parse(new FileReader("/home/vincent/Development/Java_Projects/SilviaTerra/examples/tree_info.txt"));
+            obj = jsonParser.parse(new FileReader(args[1]));
             JSONObject jsonObject2 = (JSONObject) obj;
             
-            obj = jsonParser.parse(new FileReader("/home/vincent/Development/Java_Projects/SilviaTerra/examples/pixels1.txt"));
+            obj = jsonParser.parse(new FileReader(args[2]));
             JSONObject jsonObject3 = (JSONObject) obj;
             
-//            DBHLength = (Double.parseDouble((String) jsonObject2.get("dbh"))) * 2.54;
+            DBHLength = (Double.parseDouble((String) jsonObject2.get("dbh"))) * 2.54;
             VFOV = (double) jsonObject1.get("horizontalViewAngle");
             HFOV = (double) jsonObject1.get("verticalViewAngle");
-//            verticalTiltAngle = ((double) (jsonObject1.get("bolePitch"))) + 90.0;
+            verticalTiltAngle = ((double) (jsonObject1.get("bolePitch"))) + 90.0;
             rawDBHPixelList = (ArrayList) jsonObject3.get("dbh");
             rawBolePixelList = (ArrayList) jsonObject3.get("bole");
             
@@ -67,16 +67,16 @@ public class SilviaTerra
             getWidths(bolePixelList);
             
             System.out.println(horizontalDistance);
-            for(int i = 0; i < bolePixelList.size(); i++)
-            {
-                System.out.println(bolePixelList.get(i).get(0) + " : " + bolePixelList.get(i).get(1) + " : " + bolePixelList.get(i).get(2) + " : " + bolePixelList.get(i).get(3) + " : " + bolePixelList.get(i).get(4));
-            }
             
             for(int i = 0; i < dbhPixelList.size(); i++)
             {
                 System.out.println(dbhPixelList.get(i).get(0) + " : " + dbhPixelList.get(i).get(1) + " : " + dbhPixelList.get(i).get(2) + " : " + dbhPixelList.get(i).get(3) + " : " + dbhPixelList.get(i).get(4));
             }
             
+            for(int i = 0; i < bolePixelList.size(); i++)
+            {
+                System.out.println(bolePixelList.get(i).get(0) + " : " + bolePixelList.get(i).get(1) + " : " + bolePixelList.get(i).get(2) + " : " + bolePixelList.get(i).get(3) + " : " + bolePixelList.get(i).get(4));
+            }
             integrateTrapezoids();
         }
         catch(Exception e)
@@ -119,6 +119,7 @@ public class SilviaTerra
             for(int i = 0; i < list.size(); i++)
             {
                 list1.get(i).add(VRes - list.get(i).get("right").get(1));
+//                list1.get(i).add(list.get(i).get("right").get(1));
             }
         }
     }
@@ -153,6 +154,8 @@ public class SilviaTerra
             for(int i = 0; i < list.size(); i++)
             {
                 list.get(i).add((list.get(i).get(1) / imagePlateScale) + (verticalTiltAngle - (VFOV / 2)));
+//                list.get(i).add((VFOV - (list.get(i).get(1) / imagePlateScale)) + (verticalTiltAngle - (VFOV / 2)));
+                
                 if(Math.tan(Math.toRadians(list.get(i).get(2))) * horizontalDistance > highestDBHHeight * 1.1)
                 {
                     list.get(i).add(Math.tan(Math.toRadians(list.get(i).get(2))) * horizontalDistance);
@@ -173,7 +176,8 @@ public class SilviaTerra
     
     public static void getImagePlateScale()
     {
-        imagePlateScale = VRes / VFOV;
+//        imagePlateScale = VRes / VFOV;
+        imagePlateScale = 47.53;
     }
     
     public static void getHorizontalDistance()
