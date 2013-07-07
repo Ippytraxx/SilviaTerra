@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
+import org.apache.commons.math3.analysis.interpolation.*;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 /**
  *
@@ -17,7 +18,7 @@ public class SilviaTerra
     static double DBHPixels;
     static double VFOV;
     static double HFOV;
-    static double verticalTiltAngle = 27;
+    static double verticalTiltAngle = 39;
     static double HRes = 2448;
     static double VRes = 3264;
     static double highestDBHHeight;
@@ -45,10 +46,10 @@ public class SilviaTerra
             obj = jsonParser.parse(new FileReader(args[2]));
             JSONObject jsonObject3 = (JSONObject) obj;
             
-            DBHLength = (Double.parseDouble((String) jsonObject2.get("dbh"))) * 2.54;
+//            DBHLength = (Double.parseDouble((String) jsonObject2.get("dbh"))) * 2.54;
             VFOV = (double) jsonObject1.get("horizontalViewAngle");
             HFOV = (double) jsonObject1.get("verticalViewAngle");
-            verticalTiltAngle = ((double) (jsonObject1.get("bolePitch"))) + 90.0;
+//            verticalTiltAngle = ((double) (jsonObject2.get("bolePitch"))) + 90.0;
             rawDBHPixelList = (ArrayList) jsonObject3.get("dbh");
             rawBolePixelList = (ArrayList) jsonObject3.get("bole");
             
@@ -68,6 +69,8 @@ public class SilviaTerra
             
             System.out.println(horizontalDistance);
             
+            integrateTrapezoids();
+            
             for(int i = 0; i < dbhPixelList.size(); i++)
             {
                 System.out.println(dbhPixelList.get(i).get(0) + " : " + dbhPixelList.get(i).get(1) + " : " + dbhPixelList.get(i).get(2) + " : " + dbhPixelList.get(i).get(3) + " : " + dbhPixelList.get(i).get(4));
@@ -77,7 +80,8 @@ public class SilviaTerra
             {
                 System.out.println(bolePixelList.get(i).get(0) + " : " + bolePixelList.get(i).get(1) + " : " + bolePixelList.get(i).get(2) + " : " + bolePixelList.get(i).get(3) + " : " + bolePixelList.get(i).get(4));
             }
-            integrateTrapezoids();
+            
+            getVolume();
         }
         catch(Exception e)
         {
@@ -176,8 +180,7 @@ public class SilviaTerra
     
     public static void getImagePlateScale()
     {
-//        imagePlateScale = VRes / VFOV;
-        imagePlateScale = 47.53;
+        imagePlateScale = VRes / VFOV;
     }
     
     public static void getHorizontalDistance()
@@ -204,6 +207,39 @@ public class SilviaTerra
            volume += (0.5 * (h1 + h2)) * b;
         }
         System.out.println(volume);
+    }
+    
+    public static void getVolume()
+    {
+        double h;
+        double htotal = 0;
+        double r1;
+        double r2;
+        double v = 0;
+        double[] pointsx = new double[pixelList.size()];
+        double[] pointsy = new double[pixelList.size()];
+        Double b1 = Double.valueOf(Math.ceil(pixelList.get(0).get(3))) * 10;
+        Double b2 = Double.valueOf(Math.floor(pixelList.get(pixelList.size() - 1).get(3)));
+        PolynomialSplineFunction psf;
+        LoessInterpolator li = new LoessInterpolator(0.3, 0);
+        
+        for(int i = 0; i < pixelList.size(); i++)
+        {
+            pointsx[i] = pixelList.get(i).get(3);
+            pointsy[i] = pixelList.get(i).get(4) / 2;
+        }
+        
+        psf = li.interpolate(pointsx, pointsy);
+        
+        for(int j = b1.intValue(); j < b2.intValue() * 10; j += 1)
+        {
+            h = 0.1;
+            htotal += h;
+            r1 = psf.value(j * 0.1);
+            r2 = psf.value(j * 0.1 + 0.1);
+            v += ((Math.PI * h) / 3.0) * (Math.pow(r1, 2.0) + r1 * r2 + Math.pow(r2, 2.0));
+            System.out.println(htotal + " : " + r1 + " : " + r2 + " : " + v);
+        }
     }
 }
  
